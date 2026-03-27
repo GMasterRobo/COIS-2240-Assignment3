@@ -39,6 +39,18 @@ public class RentalSystem {
             System.out.println("Vehicle rented to " + customer.getCustomerName());
 
             saveRecord(record);
+
+            try {
+                FileWriter writer = new FileWriter("vehicles.txt");
+                for(Vehicle v : vehicles) {
+                    writer.write(v.getLicensePlate() + "," + v.getMake() + "," +
+                            v.getModel() + "," + v.getYear() +
+                            "," +v.getStatus() + "\n");
+                }
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         else {
             System.out.println("Vehicle is not available for renting.");
@@ -53,6 +65,18 @@ public class RentalSystem {
             System.out.println("Vehicle returned by " + customer.getCustomerName());
 
             saveRecord(record);
+
+            try {
+                FileWriter writer = new FileWriter("vehicles.txt");
+                for(Vehicle v : vehicles) {
+                    writer.write(v.getLicensePlate() + "," + v.getMake() + "," +
+                            v.getModel() + "," + v.getYear() +
+                            "," +v.getStatus() + "\n");
+                }
+                writer.close();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
         else {
             System.out.println("Vehicle is not rented.");
