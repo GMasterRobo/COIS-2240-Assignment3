@@ -4,6 +4,10 @@ target/
 !**/src/test/**/target/
 .kotlin
 
+vehicles.txt
+customers.txt
+rental_records.txt
+
 ### IntelliJ IDEA ###
 .idea/
 .idea/modules.xml
