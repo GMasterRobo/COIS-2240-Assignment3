@@ -59,7 +59,12 @@ public class VehicleRentalApp {
 		            }
                     
                     if (vehicle != null){
-	                    vehicle.setLicensePlate(plate);
+                        try {
+                            vehicle.setLicensePlate(plate);
+                        } catch (IllegalArgumentException e) {
+                            e.getMessage();
+                        }
+
 	                    rentalSystem.addVehicle(vehicle);
                     }
                     else {
