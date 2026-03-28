@@ -3,6 +3,8 @@ import java.io.IOException;
 import java.util.List;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.io.BufferedReader;
+import java.io.FileReader;
 
 public class RentalSystem {
     private List<Vehicle> vehicles = new ArrayList<>();
@@ -29,6 +31,90 @@ public class RentalSystem {
     public void addCustomer(Customer customer) {
         saveCustomer(customer);
         customers.add(customer);
+    }
+    public void loadData(){
+    	try (BufferedReader reader = new BufferedReader(new FileReader("vehicles.txt"))) {      
+			// Reads each line from the vehicles.txt file, and uses csv handling to convert it to vehicle objects.
+    		String line;
+			while ((line = reader.readLine()) != null) {
+	    	String [] parts = line.split(",");
+	    	// Sets the status of the vehicle by convert the text value into an enum
+	    	String licensePlate = parts[1].trim();
+	    	String make = parts[2].trim();
+	    	String model = parts[3].trim();
+	    	int year = Integer.parseInt(parts[4].trim());
+	    	Vehicle.VehicleStatus status = Vehicle.VehicleStatus.valueOf(parts[5].trim());
+	    	// Setting the vehicle initially as null for compiler reasons.
+	    	Vehicle vehicle = null;
+	    	// This switch statements differentiates between the different types of vehicles, and creates a specific object of that class.
+	    	switch(parts[0].trim()) {
+	    	case "SportCar":{
+	    		int numSeats = Integer.parseInt(parts[6].trim());
+	    		int horsePower = Integer.parseInt(parts[7].trim());
+	    		Boolean hasTurbo = Boolean.parseBoolean(parts[8].trim());
+	    		vehicle = new SportCar(make, model, year, numSeats, horsePower, hasTurbo);
+	    		break;
+	    	}
+	    	case "Car":{
+	    		int numSeats = Integer.parseInt(parts[6].trim());
+	    		vehicle = new Car(make, model, year, numSeats);
+	    		break;
+	    	}
+	    	case "Minibus":{
+	    		Boolean isAccessible = Boolean.parseBoolean(parts[6].trim());
+	    		vehicle = new Minibus(make, model, year, isAccessible);
+	    		break;
+	    	}
+	    	case "PickupTruck":{
+	    		double cargoSize = Double.parseDouble(parts[6].trim());
+	    		Boolean hasTrailer = Boolean.parseBoolean(parts[7].trim());
+	    		vehicle = new PickupTruck(make, model, year, cargoSize, hasTrailer);
+	    		break;
+	    	}
+	    }
+		    	if (vehicle != null) {
+			    	vehicle.setLicensePlate(licensePlate);
+			    	vehicle.setStatus(status);
+		    		vehicles.add(vehicle);
+		    	}
+			}
+		} catch (IOException e) {
+			System.out.print("Error reading file");
+		}
+    	try (BufferedReader reader = new BufferedReader(new FileReader("customers.txt"))) {      
+			// Reads each line from the customers.txt file, and uses csv handling to convert it to customer objects, and then add them to the customers list.
+    		String line;
+			while ((line = reader.readLine()) != null) {
+	    	String [] parts = line.split(",");
+	    	// Sets the status of the vehicle by convert the text value into an enum
+	        Customer customer = new Customer(Integer.parseInt(parts[0].trim()), parts[1].trim()); 
+    		customers.add(customer);
+			}
+		} catch (IOException e) {
+			System.out.print("Error reading file");
+    	}
+    	try (BufferedReader reader = new BufferedReader(new FileReader("rental_records.txt"))) {      
+			// Reads each line from the customers.txt file, and uses csv handling to convert it to customer objects, and then add them to the customers list.
+			String line;
+			while ((line = reader.readLine()) != null) {
+	    	String [] parts = line.split(",");
+	    	// Finds the car and the customer associated with a specific record through the saved identification information
+	    	Vehicle vehicle = findVehicleByPlate(parts[0].trim());
+	    	Customer customer = findCustomerById(Integer.parseInt(parts[1].trim()));
+	    	LocalDate date = LocalDate.parse(parts[2].trim());
+	    	double totalAmount = Double.parseDouble(parts[3].trim());
+	    	String recordType = parts[4].trim();
+	    	if (vehicle != null && customer != null) {
+		        RentalRecord rentalRecord = new RentalRecord(vehicle, customer, date, totalAmount, recordType); 
+	    		rentalHistory.addRecord(rentalRecord);
+				}
+	    	else {
+	    		System.out.print("Error: Couldn't find Vehicle or Customer Information.");
+	    		}
+			}
+		} catch (IOException e) {
+			System.out.print("Error reading file");
+		}
     }
 
     public void rentVehicle(Vehicle vehicle, Customer customer, LocalDate date, double amount) {
