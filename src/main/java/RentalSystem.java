@@ -133,7 +133,8 @@ public class RentalSystem {
 		}
     }
 
-    public void rentVehicle(Vehicle vehicle, Customer customer, LocalDate date, double amount) {
+    // Add boolean condition to rent vehicle methods for testing purposes
+    public boolean rentVehicle(Vehicle vehicle, Customer customer, LocalDate date, double amount) {
         boolean first = true;
 
         if (vehicle.getStatus() == Vehicle.VehicleStatus.Available) {
@@ -141,7 +142,6 @@ public class RentalSystem {
             RentalRecord record = new RentalRecord(vehicle, customer, date, amount, "RENT");
             rentalHistory.addRecord(record);
             System.out.println("Vehicle rented to " + customer.getCustomerName());
-
             saveRecord(record);
 
             for(Vehicle v : vehicles) {
@@ -153,14 +153,15 @@ public class RentalSystem {
                 }
             }
 
-
+            return true;
         }
         else {
             System.out.println("Vehicle is not available for renting.");
+            return false;
         }
     }
-
-    public void returnVehicle(Vehicle vehicle, Customer customer, LocalDate date, double extraFees) {
+    // Add boolean condition to return vehicle methods for testing purposes
+    public boolean returnVehicle(Vehicle vehicle, Customer customer, LocalDate date, double extraFees) {
         boolean first = true;
 
         if (vehicle.getStatus() == Vehicle.VehicleStatus.Rented) {
@@ -179,9 +180,11 @@ public class RentalSystem {
                     saveVehicle(v, true);
                 }
             }
+            return true;
         }
         else {
             System.out.println("Vehicle is not rented.");
+            return false;
         }
     }    
 
