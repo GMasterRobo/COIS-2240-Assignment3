@@ -11,6 +11,10 @@ public class Minibus extends Vehicle implements Rentable {
         return super.getInfo() + " | Accessible: " + (isAccessible ? "Yes" : "No");
     }
 
+    public boolean isAccessible() {
+        return isAccessible;
+    }
+
     @Override
     public void rentVehicle() {
         setStatus(VehicleStatus.Rented);
