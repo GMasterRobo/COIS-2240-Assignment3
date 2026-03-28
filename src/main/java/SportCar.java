@@ -12,7 +12,7 @@ public final class SportCar extends Car {
         return horsepower;
     }
 
-    public boolean isHasTurbo() {
+    public boolean hasTurbo() {
         return hasTurbo;
     }
 

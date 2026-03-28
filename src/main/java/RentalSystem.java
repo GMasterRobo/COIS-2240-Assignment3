@@ -22,7 +22,7 @@ public class RentalSystem {
     }
 
     public void addVehicle(Vehicle vehicle) {
-        saveVehicle(vehicle);
+        saveVehicle(vehicle, true);
         vehicles.add(vehicle);
     }
 
@@ -32,6 +32,8 @@ public class RentalSystem {
     }
 
     public void rentVehicle(Vehicle vehicle, Customer customer, LocalDate date, double amount) {
+        boolean first = true;
+
         if (vehicle.getStatus() == Vehicle.VehicleStatus.Available) {
             vehicle.setStatus(Vehicle.VehicleStatus.Rented);
             RentalRecord record = new RentalRecord(vehicle, customer, date, amount, "RENT");
@@ -40,17 +42,16 @@ public class RentalSystem {
 
             saveRecord(record);
 
-            try {
-                FileWriter writer = new FileWriter("vehicles.txt");
-                for(Vehicle v : vehicles) {
-                    writer.write(v.getLicensePlate() + "," + v.getMake() + "," +
-                            v.getModel() + "," + v.getYear() +
-                            "," +v.getStatus() + "\n");
+            for(Vehicle v : vehicles) {
+                if (first) {
+                    saveVehicle(v, false);
+                    first = false;
+                } else {
+                    saveVehicle(v, true);
                 }
-                writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
+
+
         }
         else {
             System.out.println("Vehicle is not available for renting.");
@@ -58,6 +59,8 @@ public class RentalSystem {
     }
 
     public void returnVehicle(Vehicle vehicle, Customer customer, LocalDate date, double extraFees) {
+        boolean first = true;
+
         if (vehicle.getStatus() == Vehicle.VehicleStatus.Rented) {
             vehicle.setStatus(Vehicle.VehicleStatus.Available);
             RentalRecord record = new RentalRecord(vehicle, customer, date, extraFees, "RETURN");
@@ -66,16 +69,13 @@ public class RentalSystem {
 
             saveRecord(record);
 
-            try {
-                FileWriter writer = new FileWriter("vehicles.txt");
-                for(Vehicle v : vehicles) {
-                    writer.write(v.getLicensePlate() + "," + v.getMake() + "," +
-                            v.getModel() + "," + v.getYear() +
-                            "," +v.getStatus() + "\n");
+            for(Vehicle v : vehicles) {
+                if (first) {
+                    saveVehicle(v, false);
+                    first = false;
+                } else {
+                    saveVehicle(v, true);
                 }
-                writer.close();
-            } catch (IOException e) {
-                e.printStackTrace();
             }
         }
         else {
@@ -168,11 +168,33 @@ public class RentalSystem {
         return null;
     }
 
-    public void saveVehicle(Vehicle vehicle) {
+    public void saveVehicle(Vehicle vehicle, boolean append) {
         try {
-            FileWriter writer = new FileWriter("vehicles.txt", true);
-            writer.write(vehicle.getLicensePlate() + "," + vehicle.getMake() + "," +
-                    vehicle.getModel() + "," + vehicle.getYear() + "," +vehicle.getStatus() + "\n");
+            FileWriter writer = new FileWriter("vehicles.txt", append);
+            if (vehicle instanceof SportCar) {
+                SportCar v = (SportCar) vehicle;
+                writer.write("SportCar," + v.getLicensePlate() + "," + v.getMake() + "," +
+                        v.getModel() + "," + v.getYear() + "," +v.getStatus() +
+                        "," + v.getNumSeats() + "," + v.getHorsepower() + "," + v.hasTurbo() + "\n");
+
+            } else if (vehicle instanceof Car) {
+                Car v = (Car) vehicle;
+                writer.write("Car," + v.getLicensePlate() + "," + v.getMake() + "," +
+                        v.getModel() + "," + v.getYear() + "," +v.getStatus() +
+                        "," + v.getNumSeats() + "\n");
+
+            } else if (vehicle instanceof Minibus) {
+                Minibus v = (Minibus) vehicle;
+                writer.write("Minibus," + v.getLicensePlate() + "," + v.getMake() + "," +
+                        v.getModel() + "," + v.getYear() + "," +v.getStatus() +
+                        "," + v.isAccessible() + "\n");
+
+            } else if (vehicle instanceof PickupTruck) {
+                PickupTruck v = (PickupTruck) vehicle;
+                writer.write("PickupTruck," + v.getLicensePlate() + "," + v.getMake() + "," +
+                        v.getModel() + "," + v.getYear() + "," +v.getStatus() +
+                        "," + v.getCargoSize() + "," + v.hasTrailer() + "\n");
+            }
             writer.close();
         } catch (IOException e) {
             e.printStackTrace();
