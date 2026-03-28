@@ -23,14 +23,30 @@ public class RentalSystem {
         return system;
     }
 
-    public void addVehicle(Vehicle vehicle) {
-        saveVehicle(vehicle, true);
-        vehicles.add(vehicle);
+    public boolean addVehicle(Vehicle vehicle) {
+    	// Add check to ensure that a car with this license plate doesn't already exist in the system
+    	if (findVehicleByPlate(vehicle.getLicensePlate()) != null) {
+    		System.out.print("A vehicle with this license plate already exists!");
+    		return false;
+    	}
+    	else {
+	        saveVehicle(vehicle, true);
+	        vehicles.add(vehicle);
+	        return true;
+    	}
     }
 
-    public void addCustomer(Customer customer) {
-        saveCustomer(customer);
-        customers.add(customer);
+    public boolean addCustomer(Customer customer) {
+    	// Add check to ensure that a customer with this customer id doesn't already exist in the system
+    	if (findCustomerById(customer.getCustomerId()) != null) {
+    		System.out.print("A customer with this ID number already exists!");
+    		return false;
+    	}
+    	else {
+	        saveCustomer(customer);
+	        customers.add(customer);
+	        return true;
+    	}
     }
     public void loadData(){
     	try (BufferedReader reader = new BufferedReader(new FileReader("vehicles.txt"))) {      
