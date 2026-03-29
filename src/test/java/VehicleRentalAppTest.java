@@ -3,6 +3,8 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
 import java.time.LocalDate;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Modifier;
 
 class VehicleRentalAppTest {
     @Test
@@ -58,4 +60,14 @@ class VehicleRentalAppTest {
 		returnResult = testSystem.returnVehicle(testVehicle, testCustomer, testDate, 500);
 		assertFalse(returnResult);
 	}
+
+    @Test
+    public void testSingletonRentalSystem() throws Exception{
+        Constructor<RentalSystem> constructor = RentalSystem.class.getDeclaredConstructor();
+
+        assertEquals(Modifier.PRIVATE, constructor.getModifiers());
+
+        RentalSystem instance = RentalSystem.getInstance();
+        assertNotNull(instance);
+    }
 }
